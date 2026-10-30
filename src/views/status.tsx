@@ -1,4 +1,20 @@
+import type { StatusCounts } from '../digest/count.js';
 import type { Status } from '../status.js';
+
+function Counts({ counts }: { counts: StatusCounts | null }) {
+  if (counts === null) return <span>—</span>;
+  return (
+    <span>
+      {counts.ok} ok · {counts.retry} retry · {counts.fail} fail
+      {counts.badLines > 0 && (
+        <>
+          {' · '}
+          <span class="warn">{counts.badLines} bad {counts.badLines === 1 ? 'line' : 'lines'}</span>
+        </>
+      )}
+    </span>
+  );
+}
 
 export function StatusBoard({ status }: { status: Status }) {
   return (
@@ -20,7 +36,9 @@ export function StatusBoard({ status }: { status: Status }) {
       ) : (
         <ul>
           {status.nights.map((n) => (
-            <li>{n}</li>
+            <li>
+              <a href={`/digest/${n}`}>{n}</a> · <Counts counts={status.counts[n] ?? null} />
+            </li>
           ))}
         </ul>
       )}
